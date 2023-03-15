@@ -149,7 +149,7 @@ Compare rendering times on a few scenes with moderately complex geometries with 
   Walk through your BVH construction algorithm. Explain the heuristic you chose for picking the splitting point.
 </h3>
 <p>
-    YOUR RESPONSE GOES HERE
+  To construct our BVH we first loop over the primitives and enlarge the bounding box by the bounding box of each primitive, while also collecting some useful numbers to determine our heuristic with, the minimum and maximum centroids across the x, y, and z axes and the average of the centroids. Our heuristic is to pick the axis with the largest range and use the centroid of this axis as the splitting point for our left and right nodes. The idea is that the axis with the largest range will likely contain the most primitives spread out across it and taking the average splits them evenly. We calculate the range from the minimums and maximums and depending on the axis we choose we split the primitives using std::partition based on the .x, .y, or .z of the overall average centroid. We then recursively build the BVH by assigning the left and right nodes of the node to recursive calls on the partitioned halves of the primitives vector. The base case is if there are less than max_leaf_size primitives, then the node is a leaf and the left and right nodes are null.
 </p>
 
 <h3>
@@ -200,7 +200,7 @@ Compare the results between uniform hemisphere sampling and lighting sampling in
   Walk through both implementations of the direct lighting function.
 </h3>
 <p>
-    YOUR RESPONSE GOES HERE
+  We loop over num_samples samples and for each sample we sample a ray direction, wj, from hemisphereSample. We use this to generate a ray from hit_p in the direction wj. Because wj is sampled in object space, we must convert it to world space by multiplying by the object to world matrix, o2w and normalize. We set the min_t of this new ray to EPS_F, a small constant that prevents numerical precision issues where the ray intersects the surface it starts from. In order to check if the new ray adds direct illumination to the light source we use bvh->intersect. If it does intersect, we can add this sample to our running total. We multiply fr, the BSDF by Li, the incoming light calculated from get_emission() of the intersection and then multiply by cos_theta(wj) and then normalize by dividing by the probability of this sample, p(wj), which is the pdf of the hemisphere, 1/2pi. Finally, we normalize the total by dividing by the number of samples.
 </p>
 
 <h3>

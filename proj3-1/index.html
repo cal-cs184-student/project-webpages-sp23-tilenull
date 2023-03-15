@@ -97,8 +97,9 @@ Show images with normal shading for a few small .dae files. -->
   Walk through the ray generation and primitive intersection parts of the rendering pipeline.
 </h3>
 <p>
-    YOUR RESPONSE GOES HERE
+  To generate a ray we are given (x, y) in image space to pass through from the camera origin. Image space is bounded from (0, 0) to (1, 1) with (0.5, 0.5) at the center so to convert it to camera space we must first offset x and y by -0.5 so that the plane is centered at (0, 0). The plane is now bounded by (-0.5, -0,5) and (0.5, 0.5) so we multiply by 2 in order to have it bounded from (-1, -1) to (1, 1). We then multiply by tan(0.5 * radians(hFov)) to finish the transition to camera space. To convert from camera space we multiply by camera to world rotation matrix, c2w. Finally we generate our new ray with this normalized vector as the direction, the origin at pos, and min_t and max_t as nclip and fclip.
 </p>
+<p>In raytrace_pixel, we take ns_aa samples of the pixel and generate rays and trace them to get a Monte Carlo estimate of the pixel. We loop over the number of samples, choosing the position of the sample in the pixel from gridSampler->get_sample() and generating a ray for this position. We average the est_radiance_global_illumination of these sampled rays and update the pixel on the sample buffer.</p>
 <br>
 
 <h3>
@@ -201,8 +202,8 @@ Compare the results between uniform hemisphere sampling and lighting sampling in
 </h3>
 <p>
   For direct lighting with hemisphere sampling we used the Monte Carlo estimator from Lecture 13:
-  <img src="3.3eq.png" align="middle" width="400px"/>
-  We loop over num_samples samples and for each sample we sample a ray direction, <pre>wj</pre>, from hemisphereSampler. We use this to generate a ray from <pre>hit_p</pre> in the direction <pre>wj</pre>. Because <pre>wj</pre> is sampled in object space, we must convert it to world space by multiplying by the object to world matrix, <pre>o2w</pre> and normalize. We set the <pre>min_t</pre> of this new ray to <pre>EPS_F</pre>, a small constant that prevents numerical precision issues where the ray intersects the surface it starts from. In order to check if the new ray adds direct illumination to the light source we use <pre>bvh->intersect</pre>. If it does intersect, we can add this sample to our running total. We multiply <pre>fr</pre>, the BSDF by <pre>li</pre>, the incoming light calculated from <pre>get_emission()</pre> of the intersection and then multiply by <pre>cos_theta(wj)</pre> and then normalize by dividing by the probability of this sample, <pre>p(wj)</pre>, which is the pdf of the hemisphere, <pre>1/2PI</pre>. Finally, we normalize the total by dividing by the number of samples.
+  <img src="images/3.3eq.png" align="middle" width="400px"/>
+  We loop over num_samples samples and for each sample we sample a ray direction, <code>wj</code>, from hemisphereSampler. We use this to generate a ray from <code>hit_p</code> in the direction <code>wj</code>. Because <code>wj</code> is sampled in object space, we must convert it to world space by multiplying by the object to world matrix, <code>o2w</code> and normalize. We set the <code>min_t</code> of this new ray to <code>EPS_F</code>, a small constant that prevents numerical precision issues where the ray intersects the surface it starts from. In order to check if the new ray adds direct illumination to the light source we use <code>bvh->intersect</code>. If it does intersect, we can add this sample to our running total. We multiply <code>fr</code>, the BSDF by <code>li</code>, the incoming light calculated from <code>get_emission()</code> of the intersection and then multiply by <code>cos_theta(wj)</code> and then normalize by dividing by the probability of this sample, <code>p(wj)</code>, which is the pdf of the hemisphere, <code>1/2PI</code>. Finally, we normalize the total by dividing by the number of samples.
 </p>
 
 <h3>

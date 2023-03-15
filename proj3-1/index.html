@@ -105,8 +105,9 @@ Show images with normal shading for a few small .dae files. -->
 <h3>
   Explain the triangle intersection algorithm you implemented in your own words.
 </h3>
+<img src="images/mollertrumbore.png" align="middle" width="400px"/>
 <p>
-    YOUR RESPONSE GOES HERE
+  The triangle can be represented in barycentric coordinates as a(P0) + b(P1) + g(P2) = (1-b-g)(P0) + b(P1) + g(P2). To find the intersection we can set this equal to the equation for a ray, O + tD, and rearranging results in the matrix system of equations shown in the image. Plugging in the values, we can determine t and the barycentric coordinates for the intersection. If the barycentric coordinates are all valid, between 0 and 1, and the t is between the min_t and max_t of the ray, then we determine that there is an intersection.
 </p>
 <br>
 
@@ -118,21 +119,21 @@ Show images with normal shading for a few small .dae files. -->
   <table style="width:100%">
     <tr align="center">
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
+        <img src="images/CBspheres.png" align="middle" width="400px"/>
         <figcaption>example1.dae</figcaption>
       </td>
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
+        <img src="images/teapot.png" align="middle" width="400px"/>
         <figcaption>example2.dae</figcaption>
       </td>
     </tr>
     <tr align="center">
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
+        <img src="images/cow.png" align="middle" width="400px"/>
         <figcaption>example3.dae</figcaption>
       </td>
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
+        <img src="images/blob.png" align="middle" width="400px"/>
         <figcaption>example4.dae</figcaption>
       </td>
     </tr>
@@ -161,22 +162,22 @@ Compare rendering times on a few scenes with moderately complex geometries with 
   <table style="width:100%">
     <tr align="center">
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
-        <figcaption>example1.dae</figcaption>
+        <img src="images/maxplanck.png" align="middle" width="400px"/>
+        <figcaption>maxplanck.dae</figcaption>
       </td>
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
-        <figcaption>example2.dae</figcaption>
+        <img src="images/CBlucy.png" align="middle" width="400px"/>
+        <figcaption>CBlucy.dae</figcaption>
       </td>
     </tr>
     <tr align="center">
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
-        <figcaption>example3.dae</figcaption>
+        <img src="images/bunny.png" align="middle" width="400px"/>
+        <figcaption>bunny.dae</figcaption>
       </td>
       <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
-        <figcaption>example4.dae</figcaption>
+        <img src="images/beast.png" align="middle" width="400px"/>
+        <figcaption>beast.dae</figcaption>
       </td>
     </tr>
   </table>

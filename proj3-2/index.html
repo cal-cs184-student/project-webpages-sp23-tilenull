@@ -58,7 +58,7 @@
 <p>
   In this part, we implemented 
   <br><br>
-  Shown below are images of  CBdragon_microfacet_au.dae rendered at alphas of 0.005, 0.05, 0.25 and 0.5.
+  Shown below are images of CBdragon_microfacet_au.dae rendered at alphas of 0.005, 0.05, 0.25 and 0.5.
 </p>
 <!-- Example of including multiple figures -->
 <div align="middle">
@@ -112,33 +112,54 @@
   <br>
 
   <p>
-	Cosine hemisphere sampling is considerably more noisy and artifacted than importance sampling. The reflective parts of the bunny are noisy and the black parts and the edges of the object are especially defined with cosine hemisphere sampling. Our importance sampling reduces noise by sampling according to the shape of the Beckmann NDF.
+	Cosine hemisphere sampling is considerably more noisy and artifacted than importance sampling. The reflective parts of the bunny are noisy and the black parts and the edges of the object are especially defined with cosine hemisphere sampling. Our normal distribution function in <code>MicrofacetBSDF::D()</code> is defined based on the Beckmann distribution so in our importance sampling we sample according to the shape of the Beckmann NDF, reducing noise.
   </p>
   <p>
-	To implement importance sampling we calculate the pdfs p&theta and p&phi and sample them using the inverted and integrated equations given in the spec, where we use <code>sampler.get_sample()</code> to determine r1 and r2.
+	To implement importance sampling we calculate the pdfs pθ and pΦ and sample them using the inverted and integrated equations given in the spec, where we use <code>sampler.get_sample()</code> to determine r1 and r2.
 	<div align="middle">
 		<table style="width:100%">
 		  <tr align="center">
 			<td>
-			  <img src="images/2.4.png" align="middle" width="480px"/>
+			  <img src="images/2.4.png" align="middle" width="200px"/>
 			</td>
 			<td>
-			  <img src="images/2.4-1.png" align="middle" width="480px"/>
+			  <img src="images/2.4-1.png" align="middle" width="200px"/>
 			</td>
 		  </tr>
 		</table>
 	  </div>
 	  <br>
 	  We determine the sampled microfacet normal h by converting from spherical coordinates using the formula, where r=1:
-	  <img src="images/2.4-2.png" align="middle" width="480px"/>
+	  <img src="images/2.4-2.png" align="middle" width="200px"/>
 	  <figcaption>https://en.wikipedia.org/wiki/Vector_fields_in_cylindrical_and_spherical_coordinates</figcaption>
 	  <b></b>
 	  We reflect wo about h and assign it to the pointer to wi using the formula:
-	  <img src="images/2.4-3.png" align="middle" width="480px"/>
+	  <img src="images/2.4-3.png" align="middle" width="200px"/>
 	  <figcaption>https://en.wikipedia.org/wiki/Reflection_(mathematics)</figcaption>
 	  <b></b>
 	  Finally, we calculate the pdf of sampling wi with respect to the solid angle using the formula:
-	  <img src="images/2.4-4.png" align="middle" width="480px"/>
+	  <img src="images/2.4-4.png" align="middle" width="200px"/>
+  </p>
+  <p>
+	Shown below are images of CBdragon_microfacet_au.dae rendered with chromium instead of gold at alpha=0.05 and 0.5.
+  </p>
+  <div align="middle">
+	<table style="width:100%">
+	  <tr align="center">
+		<td>
+		  <img src="images/dragonchromium005.png" align="middle" width="480px"/>
+		  <figcaption>0.05</figcaption>
+		</td>
+		<td>
+		  <img src="images/dragonchromium05.png" align="middle" width="480px"/>
+		  <figcaption>0.5</figcaption>
+		</td>
+	  </tr>
+	</table>
+  </div>
+  <br>
+  <p>
+	Shown below are images of CBdragon_microfacet_au.dae rendered with chromium instead of gold at alpha=0.05 and 0.5.
   </p>
 
 </body>

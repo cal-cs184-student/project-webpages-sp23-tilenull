@@ -131,16 +131,16 @@
 	  <br>
 	  We determine the sampled microfacet normal h by converting from spherical coordinates using the formula, where r=1:
 	  <b></b>
-	  <img src="images/2.4-2.png" align="left" width="200px"/>
+	  <img src="images/2.4-2.png" align="middle" width="200px"/>
 	  <figcaption>https://en.wikipedia.org/wiki/Vector_fields_in_cylindrical_and_spherical_coordinates</figcaption>
 	  <b></b>
 	  We reflect wo about h and assign it to the pointer to wi using the formula:
 	  <b></b>
-	  <img src="images/2.4-3.png" align="left" width="300px"/>
+	  <img src="images/2.4-3.png" align="middle" width="250px"/>
 	  <figcaption>https://en.wikipedia.org/wiki/Reflection_(mathematics)</figcaption>
 	  <b></b>
 	  Finally, we calculate the pdf of sampling wi with respect to the solid angle using the formula:
-	  <img src="images/2.4-4.png" align="left" width="300px"/>
+	  <img src="images/2.4-4.png" align="middle" width="250px"/>
 	  We check if the sampled wi is valid by checking if its dot product with the normal is greater than 0, and if not we return a pdf and BRDF of 0.
   </p>
   <p>

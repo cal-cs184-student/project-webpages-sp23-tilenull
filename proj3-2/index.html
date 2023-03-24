@@ -88,7 +88,7 @@
 <br>
 
 <p>
-	As the roughness increases, the dragon becomes less specular and reflective. The texture and color also appears less smooth and more matte. We also see more artifacting/noise with the lower alphas. This is because as the roughness is increased, the distribution of the microfacet normals become more spread out and diffuse.
+	As the roughness increases, the dragon becomes less specular and reflective. The texture and color also appears less smooth and more matte. We also see more artifacting/noise with the lower alphas. This is because as the roughness is increased, the distribution of the microfacet normals becomes more spread out and diffuse. The increased diffusion likely also disperses the extra artifacting at lower alphas; we can see it become finer grained and blended in.
 </p>
 
 <p>
@@ -112,7 +112,33 @@
   <br>
 
   <p>
-	Cosine hemisphere sampling is considerably more noisy and artifacted than importance sampling.
+	Cosine hemisphere sampling is considerably more noisy and artifacted than importance sampling. The reflective parts of the bunny are noisy and the black parts and the edges of the object are especially defined with cosine hemisphere sampling. Our importance sampling reduces noise by sampling according to the shape of the Beckmann NDF.
+  </p>
+  <p>
+	To implement importance sampling we calculate the pdfs p&theta and p&phi and sample them using the inverted and integrated equations given in the spec, where we use <code>sampler.get_sample()</code> to determine r1 and r2.
+	<div align="middle">
+		<table style="width:100%">
+		  <tr align="center">
+			<td>
+			  <img src="images/2.4.png" align="middle" width="480px"/>
+			</td>
+			<td>
+			  <img src="images/2.4-1.png" align="middle" width="480px"/>
+			</td>
+		  </tr>
+		</table>
+	  </div>
+	  <br>
+	  We determine the sampled microfacet normal h by converting from spherical coordinates using the formula, where r=1:
+	  <img src="images/2.4-2.png" align="middle" width="480px"/>
+	  <figcaption>https://en.wikipedia.org/wiki/Vector_fields_in_cylindrical_and_spherical_coordinates</figcaption>
+	  <b></b>
+	  We reflect wo about h and assign it to the pointer to wi using the formula:
+	  <img src="images/2.4-3.png" align="middle" width="480px"/>
+	  <figcaption>https://en.wikipedia.org/wiki/Reflection_(mathematics)</figcaption>
+	  <b></b>
+	  Finally, we calculate the pdf of sampling wi with respect to the solid angle using the formula:
+	  <img src="images/2.4-4.png" align="middle" width="480px"/>
   </p>
 
 </body>

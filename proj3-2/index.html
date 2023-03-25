@@ -50,6 +50,7 @@
 
 <h2 align="middle">Overview</h2>
 <p>
+	In this project, we implemented microfacet materials and depth of field for our pathtracer. We learned a lot about what factors go into evaluating the microfacet BSDF, and how and why the render changes with roughness, importance sampling, and different material. We also learned about how to implement a thin lens to emulate a depth of field effect, how this differs from the previous pinhole model, and how the different depth and aperature sizes vary the scene.
 </p>
 <br>
 
@@ -134,10 +135,29 @@
 	  <figcaption>https://en.wikipedia.org/wiki/Vector_fields_in_cylindrical_and_spherical_coordinates</figcaption>
 	  <b></b>
 	  We reflect wo about h and assign it to the pointer to wi using the formula:
-	  <img src="images/2.4-3.png" align="middle" width="300px"/>
-	  <figcaption>https://en.wikipedia.org/wiki/Reflection_(mathematics)</figcaption>
+	  <div align="middle">
+		<table style="width:100%">
+		  <tr align="center">
+			<td>
+				<img src="images/2.4-3.png" align="middle" width="300px"/>
+				<figcaption>https://en.wikipedia.org/wiki/Reflection_(mathematics)</figcaption>
+			</td>
+		  </tr>
+		</table>
+	  </div>
+	  <br>
 	  Finally, we calculate the pdf of sampling wi with respect to the solid angle using the formula:
-	  <img src="images/2.4-4.png" align="middle" width="300px"/>
+	  <div align="middle">
+		<table style="width:100%">
+		  <tr align="center">
+			<td>
+				<img src="images/2.4-4.png" align="middle" width="300px"/>
+				<figcaption></figcaption>
+			</td>
+		  </tr>
+		</table>
+	  </div>
+	  <br>
 	  We check if the sampled wi is valid by checking if its dot product with the normal is greater than 0, and if not we return a pdf and BRDF of 0.
   </p>
   <p>
@@ -229,6 +249,13 @@
 <p>
   We notice that as the aperture size approaches 0, the image becomes more focused all around. This makes sense, as an aperture size of 0 is equivalent to a pinhole camera, and there is little blurring due to non-convergence of light rays from an imaging point. On the other hand, as the aperture size increases, the images becomes less and less focused. This makes sense as well, since as we increase the aperture size, we let in more and more radiance from points other than the specific point we want, and they start to all mix when imaging onto a specific pixel.
 </p>
+
+<h3>
+	Please write a short paragraph together for your final report that describes how you collaborated, how it went, and what you learned.
+  </h3>
+  <p>
+	We split and wrote up the initial code semi-independently but we code reviewed together and debugged collaboratively as well. Through this project we learned a lot about ray tracing lights and rendering shading with light sources, from basic primitive intersection to BVH acceleration, lighting, and adaptive sampling. We also learned a lot about efficiently working as a team on a large project.
+  </p>
 
 </body>
 </html>

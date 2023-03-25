@@ -162,5 +162,73 @@
 	We used values of eta = 3.1743, 3.1800, 2.4650 and k = 3.3000, 3.3300, 3.2150.
   </p>
 
+
+<h2 align="middle">Part 4: Depth of Field</h2>
+<p>
+  In previous parts, we treated the camera as a pinhole camera, such that for given point we are imaging, each pixel on the image plane only receives radiance from one ray that connects the pixel and the point, passing through the pinhole. Because of this, everything is in focus. However, with a thin lens camera, each point we image has rays traced to it from every point on the lens, which then can be traced back to the image plane. For points along the plane of focus, these rays converge back to the exact same pixel on our image plane, so they are clear and in focus. However, for points not along the plane of focus, these rays don't exactly converge, which leads to blurring in the image plane. As such, simulating a thin lens model camera allows to have parameters such as aperture size and focal depth, and we can investigate how varying these affects the image.
+</p>
+<p>
+  We can observe how changing the focus depth affects an image. Shown below is a "focus stack" on CBdragon_microfacet_au.dae, where we vary the focus depth. All images were rendered with 512 samples per pixel, 4 samples per light, a max ray depth of 12, and an aperture size of 0.23:
+</p>
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="images/dragonb023d4.png" align="middle" width="480px"/>
+        <figcaption>d = 4</figcaption>
+      </td>
+      <td>
+        <img src="images/dragonb023d45.png" align="middle" width="480px"/>
+        <figcaption>d = 4.5</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="images/dragonb023d5.png" align="middle" width="480px"/>
+        <figcaption>d = 5</figcaption>
+      </td>
+      <td>
+        <img src="images/dragonb023d55.png" align="middle" width="480px"/>
+        <figcaption>d = 5.5</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<br>
+<p>
+  We notice that as we vary focus depth, the object comes in and out of focus. For d = 4, the object was out of focus because it was behind the plane of focus, but even now we can tell that the front is a little more clear than the back, which is what we expect since the front is closer to the plane of focus. For d = 4.5, we've shifted the plane of focus back a little such that the front of the dragon is in focus, but the back is not. For d = 5, we've shifted the plane of focus farther back such that the front of the dragon is now going out of focus, but the back is now in focus. Finally, for d = 5.5, we've shifted the plane of focus even farther back such that the entire object is in front of the plane of focus, but we can tell that the tail of the dragon is clearer than the head, which makes sense since it is closer to the plane of focus, and thus rays from that point would still almost converge.
+</p>
+
+<p>
+  We can also observe how changing the aperture size affects an image. Shown below is CBdragon_microfacet_au.dae imaged at varying aperture sizes, all rendered with 512 samples per pixel, 4 samples per light, a max ray depth of 12, and a focus depth of 4.5:
+</p>
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="images/dragonb01d45.png" align="middle" width="480px"/>
+        <figcaption>b = 0.1</figcaption>
+      </td>
+      <td>
+        <img src="images/dragonb03d45.png" align="middle" width="480px"/>
+        <figcaption>b = 0.3</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="images/dragonb05d45.png" align="middle" width="480px"/>
+        <figcaption>b = 0.5</figcaption>
+      </td>
+      <td>
+        <img src="images/dragonb07d45.png" align="middle" width="480px"/>
+        <figcaption>b = 0.7</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>
+  We notice that as the aperture size approaches 0, the image becomes more focused all around. This makes sense, as an aperture size of 0 is equivalent to a pinhole camera, and there is little blurring due to non-convergence of light rays from an imaging point. On the other hand, as the aperture size increases, the images becomes less and less focused. This makes sense as well, since as we increase the aperture size, we let in more and more radiance from points other than the specific point we want, and they start to all mix when imaging onto a specific pixel.
+</p>
+
 </body>
 </html>

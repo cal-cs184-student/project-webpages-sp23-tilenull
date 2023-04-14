@@ -23,9 +23,9 @@
 
 <body>
 
-<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2017</h1>
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
 <h1 align="middle">Project 4: Cloth Simulator</h1>
-<h2 align="middle">YOUR NAME, CS184-??</h2>
+<h2 align="middle">Shawn Zhao, Jason Gong, CS184-blobmeow</h2>
 
 <br><br>
 
@@ -66,7 +66,7 @@
 	In 2.1, we compute the total force acting on each point mass. First, we calculate the total external force F=ma by looping over external_accelerations, multiplying by mass, and adding it up. We then loop over the point masses and initialize the force on each to the total external force. Next, we add the spring correction forces by looping over the springs and using Hooke’s law Fs = ks * (||pa - pb|| - l). For each spring type, we check if it is enabled from cp->enable_structural_constraints. Since Fs is a scalar, we create a force vector with magnitude Fs and opposite directions from pa to pb or pb to pa and add them to the point mass a and b forces. Bending is weaker so we multiply by a small constant 0.2.
 	</p>
 	<p>In 2.2, we use Verlet Integration to compute the new point mass positions. If the point mass is not pinned, we calculate the new position using the formula</p>
-	<img src="images/verlet.png" align="middle" width="200px"/>
+	<img src="images/verlet.png" align="middle" width="350px"/>
 	<p>where at is derived from the point mass’s forces divided by mass. We update last_position to the current position and position to the new calculated position.
 	</p>
 	<p>In 2.3, we constrain position updates so that a spring’s length does not pass 10% of its rest_length. If the distance between point mass a and point mass b is greater than 1.1 times the rest_length, then we apply the correction. The correction is a vector with direction from pm_a to pm_b or pm_b to pm_a with magnitude of the distance past 1.1 times the rest length. If neither are pinned, we apply the correction with half the magnitude to both point masses. If one is pinned then the correction is applied with the full magnitude to the unpinned point mass.
@@ -118,25 +118,132 @@
 			<figcaption>damping=0 in motion</figcaption>
 		  </td>
 		  <td>
-			<img src="images/2damping1-100.png" align="middle" width="480px"/>
+			<img src="images/2damping1.png" align="middle" width="480px"/>
 			<figcaption>density=1 in motion</figcaption>
 		  </td>
 		</tr>
 	  </table>
 	</div>
 	<br>
+	<p>Shown below is scene/pinned4 with Blinn-Phong shading at rest.</p>
 	<div align="middle">
 		<table style="width:100%">
 		  <tr align="center">
 			<td>
 			  <img src="images/2phong.png" align="middle" width="480px"/>
-			  <figcaption>scene/pinned4 with Blinn-Phong shading at rest</figcaption>
+			  <figcaption>scene/pinned4</figcaption>
 			</td>
 		  </tr>
 		</table>
 	  </div>
 	  <br>
 
+
+<h2 align="middle">Part 3: Handling collisions with other objects</h2>
+  <p>
+	In 3.1, we implemented handling for collisions with spheres. We can check if a point mass collides with a sphere since the intersection point will be at a distance of the radius from the center point of the sphere on the line from the center of the sphere to the position of the point mass. If the distance is less than the radius then there is a collision and we can calculate the intersection point likewise. We can then calculate the correction, which will have a magnitude of the distance from the point mass’s last position to the intersection point in the direction of the origin to the position, scaled by (1-friction). We apply this to the last position since it was the position before the collision and set the current position to the corrected position.	</p>
+	<p>Shown below are images of scene/sphere.json with varying ks and Blinn-Phong shading. With smaller ks, the cloth is more flimsy and flexible, folding more and drooping further down on the sphere. With larger ks, the cloth is more rigid, folding down on the sphere less. This makes sense as a larger ks will cause the springs to hold the cloth’s original shape better.
+	</p>
+	<div align="middle">
+		<table style="width:100%">
+		  <tr align="center">
+			<td>
+			  <img src="images/3ks5000.png" align="middle" width="480px"/>
+			  <figcaption>Default ks = 5000</figcaption>
+			</td>
+			<td>
+			  <img src="images/3ks500.png" align="middle" width="480px"/>
+			  <figcaption>ks = 500</figcaption>
+			</td>
+		  </tr>
+		  <tr align="center">
+			<td>
+			  <img src="images/3ks50k.png" align="middle" width="480px"/>
+			  <figcaption>ks = 50000</figcaption>
+			</td>
+		  </tr>
+		</table>
+	  </div>
+	  <br>
+	<p>In 3.2, we implemented handling for collisions with planes. We can check if a point mass collides with the plane by checking that the dot product of the last position and the plane normal is positive and the dot product of the current position and the plane normal is negative, indicating that it has passed to the other side of the plane. We calculate the intersection time in a similar fashion as in ray tracing, using the equation:</p>
+	<img src="images/rayplaneintersect.png" align="middle" width="350px"/>
+	<p>The correction vector thus has magnitude t and direction from the position after it crossed the plane to the last position, before it crossed the plane, scaled by (1 - friction). We apply it to the last position and push it slightly above the tangent point by applying another vector in the direction of the normal with magnitude SURFACE_OFFSET.
+	</p>
+	<p>Shown below is an image of scene/plane.json where the cloth is lying at rest on the plane with Blinn-Phong shading.</p>
+	<div align="middle">
+		<table style="width:100%">
+		  <tr align="center">
+			<td>
+			  <img src="images/3plane.png" align="middle" width="480px"/>
+			  <figcaption>Default ks = 5000</figcaption>
+			</td>
+		</table>
+	  </div>
+	  <br>
+
+	  <h2 align="middle">Part 4: Handling self-collisions</h2>
+	  <p>
+		In this part, we implement handling for self-collision. In Cloth::hash_position we compute a hash by mapping the position to a box by subtracting the fmod of the position and the box dimensions and then hash the coordinates by multiplying each by a random prime number and adding them together. We construct a map from hashes to point masses in the corresponding box, allowing us to look up point masses in the same box that might collide. Finally, we check for collisions for each point mass with the others in the box by checking that their distances are less than 2 * thickness. We also make sure to try to collide a point mass with itself by checking that the distance between the positions and last positions is greater than zero. If the masses collide, we create a correction vector with direction from one mass to the other and magnitude of how much closer than 2 * thickness they are. The final correction vector is the average of these correction vectors, divided by simulation_steps and applied to the point mass position.
+		</p>
+		<p>Shown below are images of scene/selfCollision.json from initial collisions to a state of rest.
+		</p>
+		<div align="middle">
+			<table style="width:100%">
+			  <tr align="center">
+				<td>
+				  <img src="images/4-1.png" align="middle" width="480px"/>
+				  <figcaption></figcaption>
+				</td>
+				<td>
+				  <img src="images/4-2.png" align="middle" width="480px"/>
+				  <figcaption></figcaption>
+				</td>
+			  </tr>
+			  <tr align="center">
+				<td>
+				  <img src="images/4-3.png" align="middle" width="480px"/>
+				  <figcaption></figcaption>
+				</td>
+			  </tr>
+			</table>
+		  </div>
+		  <br>
+		<p>
+			With low density (density=1), the cloth folds very smoothly over itself as it falls. In contrast, with high density (density=100), the cloth becomes very wrinkly with many folds in different directions as it falls.
+		</p>
+		<div align="middle">
+		  <table style="width:100%">
+			<tr align="center">
+			  <td>
+				<img src="images/4density1.png" align="middle" width="480px"/>
+				<figcaption>density=1</figcaption>
+			  </td>
+			  <td>
+				<img src="images/4density100.png" align="middle" width="480px"/>
+				<figcaption>density=100</figcaption>
+			  </td>
+			</tr>
+		  </table>
+		</div>
+		<br>
+		<p>
+			With low ks (ks=10), the cloth is very wrinkly with many small folds, while with high ks (ks=100,000), the cloth is less flexible and smoothly folds, kind of the opposite effect with density.
+		</p>
+		<div align="middle">
+		  <table style="width:100%">
+			<tr align="center">
+			  <td>
+				<img src="images/4ks10.png" align="middle" width="480px"/>
+				<figcaption>ks=10</figcaption>
+			  </td>
+			  <td>
+				<img src="images/4ks100k.png" align="middle" width="480px"/>
+				<figcaption>ks=100,000</figcaption>
+			  </td>
+			</tr>
+		  </table>
+		</div>
+		<br>
 
 </body>
 </html>

@@ -27,12 +27,15 @@
 <h1 align="middle">Project 4: Cloth Simulator</h1>
 <h2 align="middle">Shawn Zhao, Jason Gong, CS184-blobmeow</h2>
 
+<h2 align="middle">Website URL: <a href="https://cal-cs184-student.github.io/project-webpages-sp23-tilenull/proj4/index.html">https://cal-cs184-student.github.io/project-webpages-sp23-tilenull/proj4/index.html</a></h2>
+
+
 <br><br>
 
 <div>
 
 <h2 align="middle">Overview</h2>
-<p>Give a high-level overview of what you implemented in this project. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the project.</p>
+<p>In this project, we implemented a cloth simulator based on a mass and spring system, featuring simulated movement via numerical integration, handling for collisions between objects as well as with itself, and finally, various shaders. We also learned a lot about shearing vs structural vs bending constraints, how ks, density, and damping affect the motion of cloth, as well as optimizations such as using a hashmap to track self-collisions and shaders to speed up rendering.</p>
 
 <h2 align="middle">Part 1: Masses and springs</h2>
 <p>
@@ -119,7 +122,7 @@
 		  </td>
 		  <td>
 			<img src="images/2damping1.png" align="middle" width="480px"/>
-			<figcaption>density=1 in motion</figcaption>
+			<figcaption>damping=1 in motion</figcaption>
 		  </td>
 		</tr>
 	  </table>
@@ -166,7 +169,7 @@
 	  </div>
 	  <br>
 	<p>In 3.2, we implemented handling for collisions with planes. We can check if a point mass collides with the plane by checking that the dot product of the last position and the plane normal is positive and the dot product of the current position and the plane normal is negative, indicating that it has passed to the other side of the plane. We calculate the intersection time in a similar fashion as in ray tracing, using the equation:</p>
-	<img src="images/rayplaneintersect.png" align="middle" width="350px"/>
+	<img src="images/rayplaneintersect.png" align="middle" width="200px"/>
 	<p>The correction vector thus has magnitude t and direction from the position after it crossed the plane to the last position, before it crossed the plane, scaled by (1 - friction). We apply it to the last position and push it slightly above the tangent point by applying another vector in the direction of the normal with magnitude SURFACE_OFFSET.
 	</p>
 	<p>Shown below is an image of scene/plane.json where the cloth is lying at rest on the plane with Blinn-Phong shading.</p>

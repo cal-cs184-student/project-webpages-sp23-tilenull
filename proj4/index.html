@@ -312,34 +312,51 @@
 <br>
 
 <p>
-	Two other types of shaders we implemented were bump map shaders and displacement map shaders. Bump mapping modifies the normal vectors of objects based on an encoded height in a texture to give the fragment shader an illusion of depth and detail when shading. Displacement mapping takes this a step further and actually modifies the positions of the vertices themselves to reflect the height encoded in the texture map. Shown below are bump shader and displacement shader renderings of the cloth and the sphere on varying coarseness of the sphere's mesh:
+	Two other types of shaders we implemented were bump map shaders and displacement map shaders. Bump mapping modifies the normal vectors of objects based on an encoded height in a texture to give the fragment shader an illusion of depth and detail when shading. Displacement mapping takes this a step further and actually modifies the positions of the vertices themselves to reflect the height encoded in the texture map. Shown below are bump shader and displacement shader renderings of the cloth and the sphere, with <code>-o 16 -a 16</code>:
+</p>
+<div align="middle">
+	<table style="width:100%">
+		<tr align="center">
+		  <td>
+			<img src="images/54_cloth_bump.png" align="middle" width="360px"/>
+			<figcaption>The cloth shaded with bump shader</figcaption>
+		  </td>
+		  <td>
+			<img src="images/54_sphere_bump.png" align="middle" width="360px"/>
+			<figcaption>The sphere shaded with bump shader</figcaption>
+		  </td>
+		  <td>
+			  <img src="images/54_sphere_displacement.png" align="middle" width="360px"/>
+			  <figcaption>The sphere shaded with displacement shader</figcaption>
+		   </td>
+		</tr>
+	</table>
+</div>
+<p>
+	We can also observe the effect of increasing the granularity of the sphere's mesh on these two shaders. In the following pictures, we have now rendered the scene with <code>-o 128 -a 128</code>:
 </p>
 <div align="middle">
 	<table style="width:100%">
 	  <tr align="center">
 		<td>
-		  <img src="images/54_cloth_bump.png" align="middle" width="480px"/>
+		  <img src="images/54_fine_cloth_bump.png" align="middle" width="360px"/>
 		  <figcaption>The cloth shaded with bump shader</figcaption>
 		</td>
 		<td>
-		  <img src="images/54_sphere_bump.png" align="middle" width="480px"/>
+		  <img src="images/54_fine_sphere_bump.png" align="middle" width="360px"/>
 		  <figcaption>The sphere shaded with bump shader</figcaption>
 		</td>
-	  </tr>
-	  <tr align="center">
 		<td>
-		  <img src="images/54_cloth_displacement.png" align="middle" width="480px"/>
-		  <figcaption>The cloth shaded with displacement shader</figcaption>
-		</td>
-		<td>
-		  <img src="images/54_sphere_displacement.png" align="middle" width="480px"/>
-		  <figcaption>The sphere shaded with displacement shader</figcaption>
-		</td>
+			<img src="images/54_fine_sphere_displacement.png" align="middle" width="360px"/>
+			<figcaption>The sphere shaded with displacement shader</figcaption>
+		 </td>
 	  </tr>
 	</table>
 </div>
+<p>
+	We can see that changing the granularity does not have a large effect on bump map shading, but causes a significant improvement in the clarity of displacement map shading. In the coarse mesh, the displacement map just seemed arbitrarily bumpy and jagged. However, in the fine mesh, we can tell that the displacements do indeed follow the "brick-like" texture that they are mapped from.
+</p>
 <br>
-
 <p>
 	The last type of shader implemented was the mirror shader. The mirror shader approximates incoming radiance uing a pre-computed environment map, and uses that as the texture to shade. Shown below is a mirror shader rendering of the cloth and the sphere:
 </p>

@@ -141,7 +141,6 @@
 	  </div>
 	  <br>
 
-
 <h2 align="middle">Part 3: Handling collisions with other objects</h2>
   <p>
 	In 3.1, we implemented handling for collisions with spheres. We can check if a point mass collides with a sphere since the intersection point will be at a distance of the radius from the center point of the sphere on the line from the center of the sphere to the position of the point mass. If the distance is less than the radius then there is a collision and we can calculate the intersection point likewise. We can then calculate the correction, which will have a magnitude of the distance from the point mass’s last position to the intersection point in the direction of the origin to the position, scaled by (1-friction). We apply this to the last position since it was the position before the collision and set the current position to the corrected position.	</p>
@@ -247,6 +246,137 @@
 		  </table>
 		</div>
 		<br>
+
+		<h2 align="middle">Part 5: Shaders</h2>
+<p>
+	In this part, we implemented shader programs to help speed up rendering. Shaders are programs that run on the GPU in parallel with a main program, taking in an input and outputting a 4D vector. We mainly implemented two components of shaders: vertex shaders and fragment shaders. Vertex shaders take in a vertex, apply transforms to them and modify their geometric properties such as position and normal vectors, and wrote these new properties such that the fragment shaders could take them as input. The fragment shader is used after rasterization, when it takes the geometric attributes given by the vertex shader and calculate a color for the rasterized fragments. By linking the vertex and fragment shaders together, an entire mesh can be shaded.
+</p>
+<p>
+	The first type of shader we implemented was a simple diffuse shader. Shown below is the spherical scene with the wireframe of the cloth, in comparison with the cloth with a diffuse shader:
+</p>
+<div align="middle">
+	<table style="width:100%">
+	  <tr align="center">
+		<td>
+		  <img src="images/51wire.png" align="middle" width="480px"/>
+		  <figcaption>The cloth and sphere scene without shading</figcaption>
+		</td>
+		<td>
+		  <img src="images/51diffuse.png" align="middle" width="480px"/>
+		  <figcaption>The cloth and sphere scene with diffus shading</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+<br>
+
+<p>
+	The second type of shader we implemented was a Blinn-Phong shader. The Blinn-Phong shading model combines three different components: ambient lighting, diffuse lighting, and specular lighting. Ambient light is constant lighting, and specular lighting is refective light from a focused light source. Shown below are pictures of the cloth and sphere scene with each lighting component isolated, along with the entire Blinn-Phong model. The k-values used were: <code>k_a = 0.1, k_d = 1.0, k_s = 0.5</code>:
+</p>
+<div align="middle">
+	<table style="width:100%">
+	  <tr align="center">
+		<td>
+		  <img src="images/52ambient.png" align="middle" width="480px"/>
+		  <figcaption>The cloth and sphere scene shaded with just ambient lighting</figcaption>
+		</td>
+		<td>
+		  <img src="images/52diffuse.png" align="middle" width="480px"/>
+		  <figcaption>The cloth and sphere scene shaded with just diffuse lighting</figcaption>
+		</td>
+	  </tr>
+	  <tr align="center">
+		<td>
+		  <img src="images/52specular.png" align="middle" width="480px"/>
+		  <figcaption>The cloth and sphere scene shaded with just specular lighting. The angle has been adjusted to emphasize the specular component</figcaption>
+		</td>
+		<td>
+		  <img src="images/52full.png" align="middle" width="480px"/>
+		  <figcaption>The cloth and sphere scene shaded with the full Blinn-Phong shading model. The angle has been adjusted to emphasize the individual components</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+<br>
+
+<p>
+	Another type of shader we implemented was a texture map shader. A texture map shader samples the fragment color from a texture at its respective texture space coordinate. Shown below is a texture map shader on the cloth and the sphere. With the NBA playoffs right around the corner, I decided to use the Warrior's logo as the texture:
+</p>
+<div align="middle">
+	<table style="width:100%">
+	  <tr align="center">
+		<td>
+		  <img src="images/53texture.png" align="middle" width="480px"/>
+		  <figcaption>The cloth and sphere scene shaded with texture map shader</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+<br>
+
+<p>
+	Two other types of shaders we implemented were bump map shaders and displacement map shaders. Bump mapping modifies the normal vectors of objects based on an encoded height in a texture to give the fragment shader an illusion of depth and detail when shading. Displacement mapping takes this a step further and actually modifies the positions of the vertices themselves to reflect the height encoded in the texture map. Shown below are bump shader and displacement shader renderings of the cloth and the sphere, with <code>-o 16 -a 16</code>:
+</p>
+<div align="middle">
+	<table style="width:100%">
+		<tr align="center">
+		  <td>
+			<img src="images/54_cloth_bump.png" align="middle" width="360px"/>
+			<figcaption>The cloth shaded with bump shader</figcaption>
+		  </td>
+		  <td>
+			<img src="images/54_sphere_bump.png" align="middle" width="360px"/>
+			<figcaption>The sphere shaded with bump shader</figcaption>
+		  </td>
+		  <td>
+			  <img src="images/54_sphere_displacement.png" align="middle" width="360px"/>
+			  <figcaption>The sphere shaded with displacement shader</figcaption>
+		   </td>
+		</tr>
+	</table>
+</div>
+<p>
+	We can also observe the effect of increasing the granularity of the sphere's mesh on these two shaders. In the following pictures, we have now rendered the scene with <code>-o 128 -a 128</code>:
+</p>
+<div align="middle">
+	<table style="width:100%">
+	  <tr align="center">
+		<td>
+		  <img src="images/54_fine_cloth_bump.png" align="middle" width="360px"/>
+		  <figcaption>The cloth shaded with bump shader</figcaption>
+		</td>
+		<td>
+		  <img src="images/54_fine_sphere_bump.png" align="middle" width="360px"/>
+		  <figcaption>The sphere shaded with bump shader</figcaption>
+		</td>
+		<td>
+			<img src="images/54_fine_sphere_displacement.png" align="middle" width="360px"/>
+			<figcaption>The sphere shaded with displacement shader</figcaption>
+		 </td>
+	  </tr>
+	</table>
+</div>
+<p>
+	We can see that changing the granularity does not have a large effect on bump map shading, but causes a significant improvement in the clarity of displacement map shading. In the coarse mesh, the displacement map just seemed arbitrarily bumpy and jagged. However, in the fine mesh, we can tell that the displacements do indeed follow the "brick-like" texture that they are mapped from.
+</p>
+<br>
+<p>
+	The last type of shader implemented was the mirror shader. The mirror shader approximates incoming radiance uing a pre-computed environment map, and uses that as the texture to shade. Shown below is a mirror shader rendering of the cloth and the sphere:
+</p>
+<div align="middle">
+	<table style="width:100%">
+	  <tr align="center">
+		<td>
+		  <img src="images/55_mirror.png" align="middle" width="480px"/>
+		  <figcaption>The cloth shaded with mirror shader</figcaption>
+		</td>
+		<td>
+			<img src="images/55_sphere.png" align="middle" width="480px"/>
+			<figcaption>The sphere shaded with mirror shader</figcaption>
+		  </td>
+	  </tr>
+	</table>
+</div>
 
 </body>
 </html>

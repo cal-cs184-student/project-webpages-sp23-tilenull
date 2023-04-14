@@ -1,7 +1,142 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 4 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 184 Mesh Editor</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2017</h1>
+<h1 align="middle">Project 4: Cloth Simulator</h1>
+<h2 align="middle">YOUR NAME, CS184-??</h2>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p>Give a high-level overview of what you implemented in this project. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the project.</p>
+
+<h2 align="middle">Part 1: Masses and springs</h2>
+<p>
+	In this part, we implemented a system of point masses and springs for the cloth in Cloth::buildGrid. First, we constructed the grid of point masses. We did this by looping over num_width_points and num_height_points and converting these indices to the actual positions x and y by multiplying by width / num_width_points and height / num_height_points. If the cloth is horizontal we set the position of the mass to (x, 1, y) and if it is vertical, (x, y, z), where z is some random offset between -1/1000 and 1/1000. If the index is in the pinned vector, we set the mass’s pinned to true. We add each point mass to the point_masses vector, making sure to add them in row-major order by looping over the y indices in the outer loop and the x indices in the inner loop. Next, we create the springs between the point masses. We looped through indices of the masses in point_masses and since they are inserted in row-major order we are able to calculate their corresponding indices in the point mass grid with width1 = (width * (num_width_points)), y = i / width1, x = i - y * width1. Structural springs are with the masses to the left and above so we check that x > 0 and y > 0 respectively. Shearing springs are with the masses to the diagonal upper left and the diagonal upper right so we check that x < width1 - 1 && y > 0 and y > 0 && x > 0. Bending springs are with the masses two to the left and two above so we check that x >= 2 and y >= 2.
+  </p>
+  <p>Shown below are images of scene/pinned2.json without shearing, with only shearing, and with all constraints.</p>
+  <div align="middle">
+	<table style="width:100%">
+	  <tr align="center">
+		<td>
+		  <img src="images/1withoutshear.png" align="middle" width="480px"/>
+		  <figcaption>Without shearing</figcaption>
+		</td>
+		<td>
+		  <img src="images/1withonlyshear.png" align="middle" width="480px"/>
+		  <figcaption>Only shearing</figcaption>
+		</td>
+	  </tr>
+	  <tr align="center">
+		<td>
+		  <img src="images/1.png" align="middle" width="480px"/>
+		  <figcaption>All constraints</figcaption>
+		</td>
+	  </tr>
+	</table>
+  </div>
+  <br>
+
+  <h2 align="middle">Part 2: Simulation via numerical integration</h2>
+  <p>
+	In 2.1, we compute the total force acting on each point mass. First, we calculate the total external force F=ma by looping over external_accelerations, multiplying by mass, and adding it up. We then loop over the point masses and initialize the force on each to the total external force. Next, we add the spring correction forces by looping over the springs and using Hooke’s law Fs = ks * (||pa - pb|| - l). For each spring type, we check if it is enabled from cp->enable_structural_constraints. Since Fs is a scalar, we create a force vector with magnitude Fs and opposite directions from pa to pb or pb to pa and add them to the point mass a and b forces. Bending is weaker so we multiply by a small constant 0.2.
+	</p>
+	<p>In 2.2, we use Verlet Integration to compute the new point mass positions. If the point mass is not pinned, we calculate the new position using the formula</p>
+	<img src="images/verlet.png" align="middle" width="200px"/>
+	<p>where at is derived from the point mass’s forces divided by mass. We update last_position to the current position and position to the new calculated position.
+	</p>
+	<p>In 2.3, we constrain position updates so that a spring’s length does not pass 10% of its rest_length. If the distance between point mass a and point mass b is greater than 1.1 times the rest_length, then we apply the correction. The correction is a vector with direction from pm_a to pm_b or pm_b to pm_a with magnitude of the distance past 1.1 times the rest length. If neither are pinned, we apply the correction with half the magnitude to both point masses. If one is pinned then the correction is applied with the full magnitude to the unpinned point mass.
+	</p>
+	<p>
+		With a small ks (ks=10) the cloth experienced more rippling and wrinkling. It took much longer to reach rest because small ripples on the edges persisted for a while. With a large ks (ks=100,000) the cloth experienced very little rippling. The area along the top where the cloth is pinned is much less curved and wrinkled, as is the rest of the cloth. This is because a larger spring constant results in stronger springs and a larger spring correction force via Hooke’s law so the springs will push the cloth back more towards its original state with larger ks.
+	</p>
+	<div align="middle">
+	  <table style="width:100%">
+		<tr align="center">
+		  <td>
+			<img src="images/2ks-10.png" align="middle" width="480px"/>
+			<figcaption>ks=10 at rest</figcaption>
+		  </td>
+		  <td>
+			<img src="images/2ks-100000.png" align="middle" width="480px"/>
+			<figcaption>ks=100,000 at rest</figcaption>
+		  </td>
+		</tr>
+	  </table>
+	</div>
+	<br>
+	<p>
+		With a low density (density=1) the cloth is very even with little rippling while with a large density (density = 100), there is a lot of rippling as the cloth moves and wrinkles persist at rest. With a lower density the cloth is lighter and the springs have less resistance to push the cloth back to its original state while with a higher density there is more pull against the spring forces.
+	</p>
+	<div align="middle">
+	  <table style="width:100%">
+		<tr align="center">
+		  <td>
+			<img src="images/2-density1.png" align="middle" width="480px"/>
+			<figcaption>density=1 at rest</figcaption>
+		  </td>
+		  <td>
+			<img src="images/2density-100.png" align="middle" width="480px"/>
+			<figcaption>density=100 at rest</figcaption>
+		  </td>
+		</tr>
+	  </table>
+	</div>
+	<br>
+	<p>
+		With a low damping (damping=0), the cloth ripples and moves violently, swinging back and forth multiple times while with a high damping (damping=1), the cloth is very smooth and smoothly falls to rest. Low damping means more energy will be conserved so the cloth continues to move rapidly while the opposite happens as energy is dissipated with high damping.
+	</p>
+	<div align="middle">
+	  <table style="width:100%">
+		<tr align="center">
+		  <td>
+			<img src="images/2damping.png" align="middle" width="480px"/>
+			<figcaption>damping=0 in motion</figcaption>
+		  </td>
+		  <td>
+			<img src="images/2damping1-100.png" align="middle" width="480px"/>
+			<figcaption>density=1 in motion</figcaption>
+		  </td>
+		</tr>
+	  </table>
+	</div>
+	<br>
+	<div align="middle">
+		<table style="width:100%">
+		  <tr align="center">
+			<td>
+			  <img src="images/2phong.png" align="middle" width="480px"/>
+			  <figcaption>scene/pinned4 with Blinn-Phong shading at rest</figcaption>
+			</td>
+		  </tr>
+		</table>
+	  </div>
+	  <br>
+
+
+</body>
 </html>
